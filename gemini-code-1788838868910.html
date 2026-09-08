@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mueblería Z&G - Catálogo Oficial</title>
+  <!-- Tailwind CSS para diseño moderno y responsive -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Iconos Lucide -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body class="bg-gray-50 text-gray-800 font-sans">
+
+  <!-- ENCABEZADO Y BRANDING -->
+  <header class="bg-slate-900 text-white sticky top-0 z-40 shadow-md">
+    <div class="max-w-7xl mx-auto px-4 py-4 flex flex-col md:flex-row justify-between items-center gap-4">
+      <div class="flex items-center gap-2">
+        <i data-lucide="armchair" class="w-8 h-8 text-amber-400"></i>
+        <h1 class="text-2xl font-bold tracking-tight">Mueblería <span class="text-amber-400">Z&G</span></h1>
+      </div>
+      <p class="text-xs md:text-sm text-gray-300">Muebles de Melamina Modernos & Custom</p>
+    </div>
+  </header>
+
+  <!-- BANNER PRINCIPAL / HERO -->
+  <section class="bg-slate-800 text-white py-10 px-4 text-center">
+    <div class="max-w-3xl mx-auto space-y-3">
+      <h2 class="text-3xl font-extrabold sm:text-4xl">Encuentra el mueble ideal para tu hogar</h2>
+      <p class="text-gray-300 text-sm sm:text-base">Consulta medidas, verifica el espacio en tu habitación y realiza tu pedido directo por WhatsApp.</p>
+    </div>
+  </section>
+
+  <!-- CONTENEDOR PRINCIPAL -->
+  <main class="max-w-7xl mx-auto px-4 py-8 grid grid-cols-1 lg:grid-cols-4 gap-8">
+
+    <!-- PANEL DE FILTROS & CALCULADORA DE ESPACIO (BARRA LATERAL) -->
+    <aside class="lg:col-span-1 space-y-6">
+      
+      <!-- CALCULADORA DE ESPACIO -->
+      <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-200">
+        <div class="flex items-center gap-2 mb-3 text-amber-600 font-semibold">
+          <i data-lucide="ruler" class="w-5 h-5"></i>
+          <h3>Filtro por Espacio (cm)</h3>
+        </div>
+        <p class="text-xs text-gray-500 mb-4">¿Cuánto espacio tienes en tu pared? Te filtramos los muebles que caben.</p>
+        <div>
+          <label class="block text-xs font-medium text-gray-700 mb-1">Ancho máximo disponible (cm)</label>
+          <input type="number" id="filterWidth" placeholder="Ej. 100" class="w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-amber-500 focus:outline-none">
+        </div>
+      </div>
+
+      <!-- FILTROS GENERALES -->
+      <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-200 space-y-4">
+        <h3 class="font-semibold text-gray-800 flex items-center gap-2">
+          <i data-lucide="filter" class="w-4 h-4 text-amber-600"></i> Filtros
+        </h3>
+        
+        <!-- Búsqueda por texto -->
+        <div>
+          <label class="block text-xs font-medium text-gray-700 mb-1">Buscar mueble</label>
+          <input type="text" id="searchInput" placeholder="Ej. Vanity, Ropero..." class="w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-amber-500 focus:outline-none">
+        </div>
+
+        <!-- Categoría -->
+        <div>
+          <label class="block text-xs font-medium text-gray-700 mb-1">Categoría</label>
+          <select id="categorySelect" class="w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-amber-500 focus:outline-none bg-white">
+            <option value="all">Todas las categorías</option>
+            <option value="vanities">Vanities / Peinadores</option>
+            <option value="roperos">Roperos & Zapateros</option>
+            <option value="mesas">Mesas de Manicura / Trabajo</option>
+          </select>
+        </div>
+
+        <!-- Botón Reset -->
+        <button id="resetFilters" class="w-full py-2 bg-gray-100 text-gray-600 rounded-lg text-xs font-medium hover:bg-gray-200 transition">
+          Limpiar Filtros
+        </button>
+      </div>
+
+    </aside>
+
+    <!-- CATÁLOGO DE PRODUCTOS (GRID) -->
+    <section class="lg:col-span-3">
+      <div class="flex justify-between items-center mb-6">
+        <h3 class="text-lg font-bold text-gray-800">Muebles Disponibles</h3>
+        <span id="productCount" class="text-xs bg-amber-100 text-amber-800 font-semibold px-2.5 py-1 rounded-full">0 muebles</span>
+      </div>
+
+      <!-- GRID DE MUEBLES -->
+      <div id="productGrid" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+        <!-- Los muebles se renderizan dinámicamente con JS -->
+      </div>
+    </section>
+
+  </main>
+
+  <!-- MODAL DE DETALLES DEL MUEBLE -->
+  <div id="productModal" class="fixed inset-0 bg-black/60 z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-2xl w-full overflow-hidden shadow-2xl relative max-h-[90vh] flex flex-col">
+      
+      <button id="closeModal" class="absolute top-3 right-3 bg-white/80 hover:bg-white p-1.5 rounded-full z-10">
+        <i data-lucide="x" class="w-5 h-5 text-gray-700"></i>
+      </button>
+
+      <div class="overflow-y-auto p-6 space-y-4">
+        <img id="modalImage" src="" alt="" class="w-full h-64 object-cover rounded-xl">
+        <div class="flex justify-between items-start">
+          <div>
+            <h3 id="modalTitle" class="text-xl font-bold text-gray-900"></h3>
+            <span id="modalCategory" class="inline-block bg-gray-100 text-gray-600 text-xs px-2 py-0.5 rounded mt-1"></span>
+          </div>
+          <span id="modalPrice" class="text-2xl font-extrabold text-amber-600"></span>
+        </div>
+
+        <p id="modalDescription" class="text-sm text-gray-600 leading-relaxed"></p>
+
+        <!-- MEDIDAS DETALLADAS -->
+        <div class="bg-amber-50 border border-amber-200 rounded-xl p-4">
+          <h4 class="text-xs font-bold text-amber-900 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+            <i data-lucide="ruler" class="w-4 h-4"></i> Medidas y Especificaciones
+          </h4>
+          <div class="grid grid-cols-3 text-center gap-2 text-xs">
+            <div class="bg-white p-2 rounded-lg shadow-sm">
+              <span class="block text-gray-400">Ancho</span>
+              <span id="modalWidth" class="font-bold text-gray-800"></span>
+            </div>
+            <div class="bg-white p-2 rounded-lg shadow-sm">
+              <span class="block text-gray-400">Alto</span>
+              <span id="modalHeight" class="font-bold text-gray-800"></span>
+            </div>
+            <div class="bg-white p-2 rounded-lg shadow-sm">
+              <span class="block text-gray-400">Profundidad</span>
+              <span id="modalDepth" class="font-bold text-gray-800"></span>
+            </div>
+          </div>
+        </div>
+
+        <!-- BOTÓN WHATSAPP -->
+        <a id="modalWhatsappBtn" href="#" target="_blank" class="flex items-center justify-center gap-2 w-full py-3.5 bg-green-600 hover:bg-green-700 text-white font-bold rounded-xl shadow-lg transition">
+          <i data-lucide="message-circle" class="w-5 h-5"></i> Pedir por WhatsApp con Vendedor
+        </a>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- SCRIPT CON DATOS Y LÓGICA INTERACTIVA -->
+  <script>
+    // Configuración personal de vendedor
+    const CODIGO_VENDEDOR = "ISAIF";
+    const TELEFONO_WHATSAPP = "50558432403"; // Cambia este número al número de WhatsApp del negocio
+
+    // BASE DE DATOS DE PRODUCTOS (Se agregan o modifican aquí fácil)
+    const products = [
+      {
+        id: "vanity-001",
+        title: "Vanity Flotante Compacto",
+        category: "vanities",
+        price: 5000,
+        width: 90,
+        height: 40,
+        depth: 35,
+        description: "Vanity flotante ideal para optimizar espacios pequeños en dormitorios. Incluye marco y acabado limpio en melamina.",
+        image: "https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?q=80&w=600&auto=format&fit=crop"
+      },
+      {
+        id: "vanity-002",
+        title: "Vanity Flotante + Repisa & LED",
+        category: "vanities",
+        price: 6000,
+        width: 110,
+        height: 75,
+        depth: 40,
+        description: "Vanity suspendido con espejo iluminado LED y repisas laterales de exhibición para maquillajes y accesorios.",
+        image: "https://images.unsplash.com/photo-1595428774223-ef52624120d2?q=80&w=600&auto=format&fit=crop"
+      },
+      {
+        id: "ropero-001",
+        title: "Ropero / Zapatero con Espejo",
+        category: "roperos",
+        price: 8000,
+        width: 80,
+        height: 180,
+        depth: 45,
+        description: "Mueble multifuncional vertical con espejo de cuerpo entero, estantería lateral y cajones inferiores de gran capacidad.",
+        image: "https://images.unsplash.com/photo-1558882224-dda166733046?q=80&w=600&auto=format&fit=crop"
+      },
+      {
+        id: "ropero-002",
+        title: "Ropero de Melamina 2 Puertas",
+        category: "roperos",
+        price: 9500,
+        width: 120,
+        height: 190,
+        depth: 50,
+        description: "Armario moderno con puertas corredizas, área de perchero y cajones organizadores inferiores.",
+        image: "https://images.unsplash.com/photo-1595526114035-0d45ed16cfbf?q=80&w=600&auto=format&fit=crop"
+      },
+      {
+        id: "mesa-001",
+        title: "Mesa de Manicura Profesional",
+        category: "mesas",
+        price: 3400,
+        width: 100,
+        height: 78,
+        depth: 40,
+        description: "Mesa especializada para salones de belleza o uñas. Superficie espaciosa y fácil de limpiar.",
+        image: "https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?q=80&w=600&auto=format&fit=crop"
+      }
+    ];
+
+    // REFERENCIAS AL DOM
+    const productGrid = document.getElementById('productGrid');
+    const searchInput = document.getElementById('searchInput');
+    const categorySelect = document.getElementById('categorySelect');
+    const filterWidth = document.getElementById('filterWidth');
+    const resetFilters = document.getElementById('resetFilters');
+    const productCount = document.getElementById('productCount');
+
+    // REFERENCIAS DEL MODAL
+    const productModal = document.getElementById('productModal');
+    const closeModal = document.getElementById('closeModal');
+    const modalImage = document.getElementById('modalImage');
+    const modalTitle = document.getElementById('modalTitle');
+    const modalCategory = document.getElementById('modalCategory');
+    const modalPrice = document.getElementById('modalPrice');
+    const modalDescription = document.getElementById('modalDescription');
+    const modalWidth = document.getElementById('modalWidth');
+    const modalHeight = document.getElementById('modalHeight');
+    const modalDepth = document.getElementById('modalDepth');
+    const modalWhatsappBtn = document.getElementById('modalWhatsappBtn');
+
+    // FUNCION PARA GENERAR EL ENLACE DE WHATSAPP CON CODIGO DE VENDEDOR
+    function getWhatsappLink(product) {
+      const text = `Hola! Vengo desde el catálogo web y me interesa el mueble: *${product.title}* (C$${product.price.toLocaleString()}).%0A%0ACódigo de vendedor: *${CODIGO_VENDEDOR}*%0A¿Tienen disponibilidad para envío?`;
+      return `https://wa.me/${TELEFONO_WHATSAPP}?text=${text}`;
+    }
+
+    // FUNCION PARA RENDERIZAR MUEBLES
+    function renderProducts(items) {
+      productGrid.innerHTML = '';
+      productCount.textContent = `${items.length} mueble${items.length !== 1 ? 's' : ''}`;
+
+      if (items.length === 0) {
+        productGrid.innerHTML = `
+          <div class="col-span-full text-center py-12 text-gray-500">
+            <i data-lucide="package-open" class="w-12 h-12 mx-auto mb-3 text-gray-400"></i>
+            <p>No se encontraron muebles con esos filtros.</p>
+          </div>
+        `;
+        lucide.createIcons();
+        return;
+      }
+
+      items.forEach(product => {
+        const card = document.createElement('div');
+        card.className = 'bg-white rounded-2xl overflow-hidden border border-gray-200 shadow-sm hover:shadow-md transition flex flex-col justify-between';
+        
+        card.innerHTML = `
+          <div>
+            <div class="relative">
+              <img src="${product.image}" alt="${product.title}" class="w-full h-48 object-cover">
+              <span class="absolute top-3 left-3 bg-slate-900/80 text-white text-[10px] font-bold px-2 py-1 rounded-md backdrop-blur-sm">
+                Ancho: ${product.width} cm
+              </span>
+            </div>
+            <div class="p-4 space-y-2">
+              <h4 class="font-bold text-gray-900 text-base leading-snug">${product.title}</h4>
+              <p class="text-xs text-gray-500 line-clamp-2">${product.description}</p>
+              <div class="text-amber-600 font-extrabold text-lg pt-1">C$ ${product.price.toLocaleString()}</div>
+            </div>
+          </div>
+          <div class="p-4 pt-0 grid grid-cols-2 gap-2">
+            <button onclick="openModal('${product.id}')" class="py-2 px-3 border border-gray-300 hover:bg-gray-50 text-gray-700 text-xs font-semibold rounded-lg transition">
+              Ver Detalles
+            </button>
+            <a href="${getWhatsappLink(product)}" target="_blank" class="py-2 px-3 bg-green-600 hover:bg-green-700 text-white text-xs font-semibold rounded-lg flex items-center justify-center gap-1 transition">
+              <i data-lucide="message-circle" class="w-3.5 h-3.5"></i> Pedir
+            </a>
+          </div>
+        `;
+        productGrid.appendChild(card);
+      });
+
+      lucide.createIcons();
+    }
+
+    // ABRIR MODAL CON DETALLES
+    window.openModal = function(id) {
+      const product = products.find(p => p.id === id);
+      if (!product) return;
+
+      modalImage.src = product.image;
+      modalTitle.textContent = product.title;
+      modalCategory.textContent = product.category.toUpperCase();
+      modalPrice.textContent = `C$ ${product.price.toLocaleString()}`;
+      modalDescription.textContent = product.description;
+      modalWidth.textContent = `${product.width} cm`;
+      modalHeight.textContent = `${product.height} cm`;
+      modalDepth.textContent = `${product.depth} cm`;
+      modalWhatsappBtn.href = getWhatsappLink(product);
+
+      productModal.classList.remove('hidden');
+    };
+
+    closeModal.addEventListener('click', () => productModal.classList.add('hidden'));
+    productModal.addEventListener('click', (e) => {
+      if (e.target === productModal) productModal.classList.add('hidden');
+    });
+
+    // LÓGICA DE FILTRADO
+    function filterProducts() {
+      const searchTerm = searchInput.value.toLowerCase();
+      const selectedCategory = categorySelect.value;
+      const maxWidth = parseFloat(filterWidth.value);
+
+      const filtered = products.filter(product => {
+        const matchesSearch = product.title.toLowerCase().includes(searchTerm) || product.description.toLowerCase().includes(searchTerm);
+        const matchesCategory = selectedCategory === 'all' || product.category === selectedCategory;
+        const matchesWidth = isNaN(maxWidth) || product.width <= maxWidth;
+
+        return matchesSearch && matchesCategory && matchesWidth;
+      });
+
+      renderProducts(filtered);
+    }
+
+    // EVENT LISTENERS
+    searchInput.addEventListener('input', filterProducts);
+    categorySelect.addEventListener('change', filterProducts);
+    filterWidth.addEventListener('input', filterProducts);
+
+    resetFilters.addEventListener('click', () => {
+      searchInput.value = '';
+      categorySelect.value = 'all';
+      filterWidth.value = '';
+      renderProducts(products);
+    });
+
+    // INICIALIZACIÓN
+    renderProducts(products);
+    lucide.createIcons();
+  </script>
+</body>
+</html>
